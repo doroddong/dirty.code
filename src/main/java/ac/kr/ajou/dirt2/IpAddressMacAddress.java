@@ -6,43 +6,22 @@ import java.util.Set;
 public class IpAddressMacAddress {
 
     // single ip, single mac, accountId, ip + mac
-    public Set<String> process(PcBangEvent pbe) {
-        Set<String> combin = new HashSet<String>();
-
+    public Set<String> buildCombinedIdentification(PcBangEvent pbe) {
+        Set<String> combinedIdentification = new HashSet<String>();
         // single IP
-        if (pbe.getIp() != null) {
-            combin.add(pbe.getIp());
-        }
-
+        bildForsingleIP(pbe, combinedIdentification);
         // single mac
-        if (pbe.getMac() != null && !pbe.getMac().isEmpty()) {
-            String[] macAddresses = pbe.getMac().split(",");
-            if (macAddresses.length <= 100) {
-                for (int i = 0; i < macAddresses.length; i++) {
-                    combin.add(macAddresses[i]);
-                }
-            } else {
-                System.out.println("Mac address too many");
-            }
-        } else {
-            System.out.println("Mac address is wrong");
-        }
-
+        bulidForSingleMac(pbe, combinedIdentification);
         // accountId
-
-        if (pbe.getAccountId() != null && !pbe.getAccountId().isEmpty()) {
-            if (!pbe.getAccountId().equals("0")) {
-                combin.add(pbe.getAccountId());
-            } else {
-                System.out.println("Account id can't be 0");
-            }
-        } else {
-            System.out.println("Account is is null or empty");
-        }
-
+        buildForAccountId(pbe, combinedIdentification);
         // ip + mac
-        if (pbe.getMac() != null && !pbe.getMac().isEmpty()) {
-            if (pbe.getIp() != null && !pbe.getIp().isEmpty()) {
+        buildForIpAndMac(pbe, combinedIdentification);
+
+        return combinedIdentification;
+    }
+    private void buildForIpAndMac(PcBangEvent pbe, Set<String> combin) {
+        if (isValidForSingleMac(pbe.getMac())) {
+            if (isValidForSingleMac(pbe.getIp())) {
                 String[] macAddresses = pbe.getMac().split(",");
                 if (macAddresses.length <= 100) {
                     for (int i = 0; i < macAddresses.length; i++) {
@@ -51,7 +30,50 @@ public class IpAddressMacAddress {
                 }
             }
         }
+    }
 
-        return combin;
+    private boolean isValidForSingleMac(String mac) {
+        return mac != null && !mac.isEmpty();
+    }
+
+    private void buildForAccountId(PcBangEvent pbe, Set<String> combin) {
+        if (isValidAccountId(pbe)) {
+            if (!pbe.getAccountId().equals("0")) {
+                combin.add(pbe.getAccountId());
+            } else {
+                logErrorMessage("Account id can't be 0");
+            }
+        } else {
+            logErrorMessage("Account is is null or empty");
+        }
+    }
+
+    private boolean isValidAccountId(PcBangEvent pbe) {
+        return isValidForSingleMac(pbe.getAccountId());
+    }
+
+    private void logErrorMessage(String s) {
+        System.out.println(s);
+    }
+
+    private void bulidForSingleMac(PcBangEvent pbe, Set<String> combin) {
+        if (isValidForSingleMac(pbe.getMac())) {
+            String[] macAddresses = pbe.getMac().split(",");
+            if (macAddresses.length <= 100) {
+                for (int i = 0; i < macAddresses.length; i++) {
+                    combin.add(macAddresses[i]);
+                }
+            } else {
+                logErrorMessage("Mac address too many");
+            }
+        } else {
+            logErrorMessage("Mac address is wrong");
+        }
+    }
+
+    private void bildForsingleIP(PcBangEvent pbe, Set<String> combin) {
+        if (pbe.getIp() != null) {
+            combin.add(pbe.getIp());
+        }
     }
 }

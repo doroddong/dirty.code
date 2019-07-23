@@ -43,10 +43,10 @@ public class LoginServiceTest {
 
     @Test
     public void getUserNameById_맞는ID가없으면_null() {
-        LoginService loginService = new LoginService();
-        String result = loginService.getUserNameById("없는ID");
-        assertNull(result);
-    }
+    LoginService loginService = new LoginService();
+    String result = loginService.getUserNameById("없는ID");
+    assertNull(result);
+}
 
     @Test
     public void getUserNameById_맞는ID가있으면_String(){
